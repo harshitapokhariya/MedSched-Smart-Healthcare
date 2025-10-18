@@ -136,15 +136,8 @@ MedSched/
 ├── package.json
 └── pnpm-lock.yaml
 
-🎨 7. Theme & Styling Guidelines
-Element	Light Mode	Dark Mode
-Background	from-indigo-50 via-white to-blue-50	from-gray-900 via-gray-800 to-gray-900
-Text	text-gray-800	text-gray-100
-Buttons	bg-primary text-white hover:bg-primary/80	Same as Light
-Cards	bg-white shadow-md	bg-gray-900 shadow-lg
 
-
-🪪 8. License
+🪪 7. License
 
 This project is licensed under the MIT License.
 
