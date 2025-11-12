@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const RES_KEYS: ResourceKey[] = ["OT", "D", "N"]
 
 export function BankersView() {
-  const { patients, resources } = useHospital()
+  const { patients, resources, setAllocation, resetAllocations } = useHospital()
   const [selected, setSelected] = useState<string | "">("")
   const [request, setRequest] = useState<ResourceVector>({ OT: 0, D: 0, N: 0 })
   const [result, setResult] = useState<SafeStateResult | null>(null)
@@ -41,6 +41,27 @@ export function BankersView() {
     if (!selected) return
     const res = isSafeState(resources, allocations, selected, request)
     setResult(res)
+  }
+
+  const onApply = () => {
+    if (!selected) return
+    if (!result?.safe) return
+    const patient = patients.find((p) => p.id === selected)
+    if (!patient) return
+    const next: ResourceVector = {
+      OT: patient.resourcesAllocated.OT + request.OT,
+      D: patient.resourcesAllocated.D + request.D,
+      N: patient.resourcesAllocated.N + request.N,
+    }
+    setAllocation(selected, next)
+    setResult(null)
+    setRequest({ OT: 0, D: 0, N: 0 })
+  }
+
+  const onRestore = () => {
+    resetAllocations()
+    setResult(null)
+    setRequest({ OT: 0, D: 0, N: 0 })
   }
 
   return (
@@ -121,8 +142,17 @@ export function BankersView() {
             </div>
           ))}
 
-          <div className="md:col-span-5">
+          <div className="md:col-span-5 flex flex-wrap gap-2">
             <Button onClick={onTest}>Test Safety State</Button>
+            <Button
+              variant="secondary"
+              onClick={onApply}
+              disabled={!selected || !result?.safe}
+              title={!selected ? "Select a patient first" : !result?.safe ? "Run a safe test first" : "Apply request"}
+            >
+              Apply Request
+            </Button>
+            <Button variant="outline" onClick={onRestore}>Restore Allocations</Button>
           </div>
         </div>
 

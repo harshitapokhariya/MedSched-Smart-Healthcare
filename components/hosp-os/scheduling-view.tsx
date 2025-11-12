@@ -88,7 +88,7 @@ export function SchedulingView() {
       </Card>
 
       <Card className="p-4">
-        <h3 className="mb-3 text-lg font-semibold text-primary">Gantt Chart</h3>
+        <h3 className="mb-3 text-lg font-semibold text-primary">Patient Flow</h3>
         <Gantt segments={result?.segments ?? []} />
       </Card>
 

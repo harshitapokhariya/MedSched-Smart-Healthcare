@@ -44,16 +44,6 @@ export function Gantt({ segments }: Props) {
         </div>
       ))}
 
-      <div className="mt-2 grid grid-cols-[120px_1fr] items-center gap-2">
-        <div className="text-xs text-muted-foreground">Time</div>
-        <div className="relative">
-          <div className="flex justify-between text-[10px] text-muted-foreground">
-            {Array.from({ length: endTime + 1 }).map((_, t) => (
-              <span key={t}>{t}</span>
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

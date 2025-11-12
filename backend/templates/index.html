@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MedSched Patient Scheduler</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: linear-gradient(to right, #e0f7fa, #b2ebf2);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>MedSched Patient Scheduler</h2>
+
+    <label for="algorithmDropdown">Select Scheduling Algorithm:</label>
+    <select id="algorithmDropdown">
+        <option value="FCFS">First Come First Serve</option>
+        <option value="SJF">Shortest Job First</option>
+        <option value="Priority">Priority Scheduling</option>
+        <option value="RR">Round Robin</option>
+    </select>
+
+    <button onclick="runScheduler()">Run Scheduler</button>
+
+    <canvas id="ganttChart" width="800" height="200"></canvas>
+    <div id="statsTable"></div>
+
+    <script>
+        let chartInstance = null;
+
+        function runScheduler() {
+            const selectedAlgo = document.getElementById("algorithmDropdown").value;
+
+            fetch('/schedule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ algorithm: selectedAlgo })
+            })
+            .then(response => response.json())
+            .then(data => {
+                drawGanttChart(data.schedule);
+                showStats(data.metrics);
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function drawGanttChart(schedule) {
+            const ctx = document.getElementById('ganttChart').getContext('2d');
+            const labels = schedule.map(p => p.name);
+            const durations = schedule.map(p => p.duration);
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Treatment Time',
+                        data: durations,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    scales: {
+                        x: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function showStats(metrics) {
+            document.getElementById("statsTable").innerHTML = `
+                <h3>Scheduling Metrics</h3>
+                <p>Average Waiting Time: ${metrics.avg_waiting}</p>
+                <p>Average Turnaround Time: ${metrics.avg_turnaround}</p>
+            `;
+        }
+    </script>
+</body>
+</html>
